@@ -61,16 +61,12 @@ method LoanScoringDemo() //Linear regression to generate scalar "credit score" o
 {
   // Feature layout: [income, race, credit_score]
   var w  := [0.5, 0.0, 0.3];  // race weight is 0<- allows for trival case
-
   var alice := [80000.0, 0.0, 720.0];  // race = 0
   var bob   := [80000.0, 1.0, 720.0];  // race = 1 
-
   // Invoke the lemma
   NonInterference(w, alice, bob, 1);
-
   // At runtime, confirm predictions match
   var score_alice := Predict(w, alice);
   var score_bob   := Predict(w, bob);
-
   assert score_alice == score_bob;  
 }
