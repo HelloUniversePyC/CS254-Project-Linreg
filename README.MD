@@ -53,11 +53,11 @@ linreg_base_case.dfy
 **Squared norms throughout.** Dafny's `real` has no `sqrt` and Z3 cannot
 handle it reliably. Every sensitivity statement uses `x * x ≤ y * y` form.
 The standard bound `|·| ≤ Delta·||x||` follows on paper by taking square
-roots — one sentence in the writeup.
+roots.
 
 **`Delta` is a precondition, not computed.** Dafny does not verify the
 training algorithm or adjacent datasets. `NormSq(VectorDiff(w, w')) ≤ Delta²`
-is assumed. The pen-and-paper argument justifies this via Chaudhuri et al. 2011.
+is assumed (Chaudhuri et al. 2011).
 
 **`Epsilon` and `DeltaDP` are fixed constants, not random variables.**
 The randomness lives in the attacker `A` and the noise draw. `ε` and `δ`
