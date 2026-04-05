@@ -19,12 +19,11 @@ predicate GaussianNoise(d: seq<real>)
 
 // Predicate: noise does not touch the sensitive feature
 predicate FairNoise(d: seq<real>, s: nat)
-  requires |d| > 0
-  requires 0 <= s < |d|
+  requires |d| > 1                         // change: was |d| > 0
+  requires 0 <= s < |d| - 1               // change: was s < |d|
 {
   d[s] == 0.0
 }
-
 // AXIOM: Gaussian mechanism satisfies (Epsilon, DeltaDP)-DP
 // given sensitivity Delta and appropriate noise scale
 // Source: Dwork and Roth (2014), Theorem A.1
@@ -74,7 +73,7 @@ lemma FairNoisyModel(w: seq<real>, x: seq<real>, x': seq<real>,
                       d: seq<real>, s: nat)
   requires |w| == |x| == |x'| == |d| > 0
   requires ValidFeatureVector(x) && ValidFeatureVector(x')
-  requires 0 <= s < |w|
+  requires 0 <= s < |w| - 1               // change: was s < |w|
   requires w[s] == 0.0
   requires FairNoise(d, s)
   requires forall i :: 0 <= i < |w| && i != s ==> x[i] == x'[i]

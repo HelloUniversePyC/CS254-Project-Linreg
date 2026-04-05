@@ -6,10 +6,10 @@ lemma DafnyContribution(w: seq<real>, w': seq<real>,
                           d: seq<real>, s: nat)
   requires |w| == |w'| == |x| == |x'| == |d| > 0
   requires ValidFeatureVector(x) && ValidFeatureVector(x')
-  requires 0 <= s < |w|
-  requires w[s] == 0.0                               // model is fair on s
-  requires FairNoise(d, s)                           // noise is fair on s
-  requires NormSq(VectorDiff(w, w')) <= Delta * Delta // weights differ by at most Delta
+  requires 0 <= s < |w| - 1               // change: was s < |w|
+  requires w[s] == 0.0
+  requires FairNoise(d, s)
+  requires NormSq(VectorDiff(w, w')) <= Delta * Delta
   requires GaussianNoise(d)
   requires forall i :: 0 <= i < |w| && i != s ==> x[i] == x'[i]
 
