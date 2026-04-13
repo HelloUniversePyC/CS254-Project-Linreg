@@ -54,7 +54,7 @@ lemma NoisyNonInterference(w: seq<real>, x: seq<real>, x': seq<real>,
 
 method NoisyLoanScoringDemo()
 {
-  // Feature layout: [income, race, credit_score, bias]
+  // feature layout (same as base case): [income, race, credit_score, bias]
   var w     := [0.5, 0.0, 0.3, 1.0];   // race weight zeroed for fairness
   var d     := [0.01, 0.0, 0.02, 0.0]; // noise on income and credit, but not race or bias
   var alice := [80000.0, 0.0, 720.0, 1.0];
@@ -74,10 +74,10 @@ method NoisyLoanScoringDemo()
 // We demonstrate this by showing the predictions diverge.
 method NoisyLeakageDemo()
 {
-  var w     := [0.5, 0.0, 0.3, 1.0];    // model is fair (w[1] == 0)
-  var d     := [0.0, 0.05, 0.0, 0.0];   // but noise touches the sensitive feature!
-  var alice := [80000.0, 0.0, 720.0, 1.0];
-  var bob   := [80000.0, 1.0, 720.0, 1.0];
+  var w     := [0.5, 0.0, 0.3];    // model is fair (w[1] == 0)
+  var d     := [0.0, 0.05, 0.0];   // but noise touches the sensitive feature!
+  var alice := [80000.0, 0.0, 720.0];
+  var bob   := [80000.0, 1.0, 720.0];
 
   var noisy_alice := PredictWithNoise(w, alice, d);
   var noisy_bob   := PredictWithNoise(w, bob, d);

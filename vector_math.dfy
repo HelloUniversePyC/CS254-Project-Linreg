@@ -5,7 +5,7 @@ function DotProduct(w: seq<real>, x: seq<real>): real
   DotProductAux(w, x, 0)
 }
 
-// Recursive helper accumulating the partial dot product starting at index i
+// recursive helper that gets the partial dot product starting at index i
 function DotProductAux(w: seq<real>, x: seq<real>, i: nat): real
   requires |w| == |x|
   requires i <= |w|
