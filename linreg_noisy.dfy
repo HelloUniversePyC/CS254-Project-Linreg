@@ -35,9 +35,10 @@ lemma NoisyDecomposition(w: seq<real>, x: seq<real>, d: seq<real>)
 // noise can breatk fairness if d[s] != 0,
 // even when the model itself is fair (w[s] == 0).
 lemma NoisyNonInterference(w: seq<real>, x: seq<real>, x': seq<real>,
-                            d: seq<real>, s: int)
+                            d: seq<real>, s: nat)
   requires |w| == |x| == |x'| == |d|
-  requires 0 <= s < |w|
+  requires ValidFeatureVector(x) && ValidFeatureVector(x')
+  requires 0 <= s < |w| - 1
   requires w[s] == 0.0 && d[s] == 0.0
   requires forall i :: 0 <= i < |w| && i != s ==> x[i] == x'[i]
   ensures PredictWithNoise(w, x, d).Observed() ==
@@ -53,11 +54,11 @@ lemma NoisyNonInterference(w: seq<real>, x: seq<real>, x': seq<real>,
 
 method NoisyLoanScoringDemo()
 {
-  // Feature layout: [income, race, credit_score]
-  var w     := [0.5, 0.0, 0.3];   // race weight zeroed for fairness
-  var d     := [0.01, 0.0, 0.02]; // noise on income and credit, but not race
-  var alice := [80000.0, 0.0, 720.0];
-  var bob   := [80000.0, 1.0, 720.0];
+  // Feature layout: [income, race, credit_score, bias]
+  var w     := [0.5, 0.0, 0.3, 1.0];   // race weight zeroed for fairness
+  var d     := [0.01, 0.0, 0.02, 0.0]; // noise on income and credit, but not race or bias
+  var alice := [80000.0, 0.0, 720.0, 1.0];
+  var bob   := [80000.0, 1.0, 720.0, 1.0];
 
   // provimng noisy predictions are still fair
   NoisyNonInterference(w, alice, bob, d, 1);
@@ -73,10 +74,10 @@ method NoisyLoanScoringDemo()
 // We demonstrate this by showing the predictions diverge.
 method NoisyLeakageDemo()
 {
-  var w     := [0.5, 0.0, 0.3];    // model is fair (w[1] == 0)
-  var d     := [0.0, 0.05, 0.0];   // but noise touches the sensitive feature!
-  var alice := [80000.0, 0.0, 720.0];
-  var bob   := [80000.0, 1.0, 720.0];
+  var w     := [0.5, 0.0, 0.3, 1.0];    // model is fair (w[1] == 0)
+  var d     := [0.0, 0.05, 0.0, 0.0];   // but noise touches the sensitive feature!
+  var alice := [80000.0, 0.0, 720.0, 1.0];
+  var bob   := [80000.0, 1.0, 720.0, 1.0];
 
   var noisy_alice := PredictWithNoise(w, alice, d);
   var noisy_bob   := PredictWithNoise(w, bob, d);
