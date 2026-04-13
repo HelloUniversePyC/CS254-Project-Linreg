@@ -50,20 +50,14 @@ function SqAbs(x: real): real
 }
 
 // Cauchy-Schwarz: (w·x)² ≤ ||w||² · ||x||²
-// Everything is a product of reals — no sqrt anywhere
+// Taken as an axiom — pen-and-paper proof in Appendix A.
+// See: Axler "Linear Algebra Done Right" Theorem 6.15.
+// All downstream lemmas (OutputSensitivity, DafnyContribution)
+// are fully mechanized given this assumption.
 lemma {:axiom} CauchySchwarzSq(w: seq<real>, x: seq<real>)
   requires |w| == |x| > 0
   ensures DotProduct(w, x) * DotProduct(w, x) <=
           NormSq(w) * NormSq(x)
-
-// Supporting inductive lemma for CauchySchwarzSq
-// Dafny will likely need this broken out explicitly
-lemma {:axiom} CauchySchwarzSqAux(w: seq<real>, x: seq<real>, i: nat)
-  requires |w| == |x| > 0
-  requires i <= |w|
-  decreases |w| - i
-  ensures DotProductAux(w, x, i) * DotProductAux(w, x, i) <=
-          NormSqAux(w, i) * NormSqAux(x, i)
 
 // NormSq of a difference expands cleanly
 // ||w - w'||² = ||w||² - 2(w·w') + ||w'||²
@@ -85,6 +79,7 @@ lemma NormSqDiffExpansionAux(w: seq<real>, w': seq<real>, i: nat)
 {
   if i == |w| {
   } else {
+    assert VectorDiff(w, w')[i] == w[i] - w'[i];
     NormSqDiffExpansionAux(w, w', i + 1);
   }
 }
