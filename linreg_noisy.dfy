@@ -74,17 +74,17 @@ method NoisyLoanScoringDemo()
 // We demonstrate this by showing the predictions diverge.
 method NoisyLeakageDemo()
 {
-  var w     := [0.5, 0.0, 0.3];    // model is fair (w[1] == 0)
-  var d     := [0.0, 0.05, 0.0];   // but noise touches the sensitive feature!
-  var alice := [80000.0, 0.0, 720.0];
-  var bob   := [80000.0, 1.0, 720.0];
+  var w     := [0.5, 0.0, 0.3, 1.0];    // model is fair (w[1] == 0), bias slot added
+  var d     := [0.0, 0.05, 0.0, 0.0];   // noise touches sensitive feature, bias noise = 0
+  var alice := [80000.0, 0.0, 720.0, 1.0];  // bias = 1.0
+  var bob   := [80000.0, 1.0, 720.0, 1.0];  // bias = 1.0
 
   var noisy_alice := PredictWithNoise(w, alice, d);
   var noisy_bob   := PredictWithNoise(w, bob, d);
 
   // The noise on the sensitive feature causes different outputs:
-  // alice noise = -d·alice =  = 0.0
-  // bob noise   = -d·bob   = -0.05
+  // alice noise = -d·alice = -(0.0*80000 + 0.05*0.0 + 0.0*720 + 0.0*1.0) = 0.0
+  // bob noise   = -d·bob   = -(0.0*80000 + 0.05*1.0 + 0.0*720 + 0.0*1.0) = -0.05
   // since alice.Observed() != bob.Observed(), fairness is broken by noise.
   assert noisy_alice.delta == 0.0;
   assert noisy_bob.delta == -0.05;
